@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Baranos AI × Fogo L1</title>
+  <title>Baranos AI × Fogo L1 Video Generator</title>
   <style>
     :root {
       --bg: #090d16;
-      --card-bg: rgba(18, 24, 38, 0.75);
-      --card-border: rgba(99, 130, 255, 0.22);
       --accent: #58a6ff;
-      --accent-glow: rgba(88, 166, 255, 0.35);
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -20,864 +17,491 @@
       background-color: var(--bg);
       font-family: var(--font);
       color: var(--text-main);
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Ambient Pulsing Glow */
-    .ambient-glow {
-      position: absolute;
-      width: 900px;
-      height: 900px;
-      background: radial-gradient(circle, rgba(56, 92, 196, 0.22) 0%, transparent 68%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 0;
-      animation: ambientPulse 7s ease-in-out infinite alternate;
-    }
-
-    @keyframes ambientPulse {
-      0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.6; }
-      100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-    }
-
-    /* Fixed Header & Animated Logos */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 26px 44px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo-img {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      object-fit: cover;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-      animation: logoFloat 4.5s ease-in-out infinite alternate;
-    }
-
-    .logo-fogo {
-      animation-delay: 2.25s;
-    }
-
-    @keyframes logoFloat {
-      0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-4px) rotate(1deg); }
-      100% { transform: translateY(2px) rotate(-1deg); }
-    }
-
-    .logo-img.pulse {
-      transform: scale(1.14) !important;
-      box-shadow: 0 0 24px var(--accent) !important;
-    }
-
-    .brand-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #c9d1d9;
-      display: inline-block;
-      animation: textGlow 5s ease-in-out infinite alternate;
-    }
-
-    @keyframes textGlow {
-      0% { opacity: 0.8; }
-      100% { opacity: 1; text-shadow: 0 0 10px rgba(88, 166, 255, 0.4); }
-    }
-
-    /* Slide Container */
-    #viewport {
-      position: relative;
-      width: 1100px;
-      height: 620px;
-      z-index: 10;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(20px) scale(0.975);
-      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 20px;
     }
 
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0) scale(1);
-    }
-
-    /* Staggered Content Animation */
-    .slide-tag, .slide-title, .slide-subtitle, .formula-banner, .grid, table, .footer-hash {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .slide.active .slide-tag {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.08s;
-    }
-    .slide.active .slide-title {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.18s;
-    }
-    .slide.active .slide-subtitle {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.28s;
-    }
-    .slide.active .formula-banner {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.35s;
-    }
-    .slide.active .grid, .slide.active table {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.42s;
-    }
-    .slide.active .footer-hash {
-      opacity: 1; transform: translateY(0);
-      transition-delay: 0.5s;
-    }
-
-    /* Typography */
-    .slide-tag {
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .slide-title {
-      font-size: 2.85rem;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 14px;
-      letter-spacing: -0.5px;
-    }
-
-    .slide-subtitle {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-      margin-bottom: 30px;
-      max-width: 860px;
-    }
-
-    /* Grids & Cards */
-    .grid {
-      display: grid;
-      gap: 18px;
-      width: 100%;
-    }
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid-4 { grid-template-columns: repeat(4, 1fr); }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 22px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-      transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-
-    .card:hover {
-      border-color: rgba(88, 166, 255, 0.45);
-      transform: translateY(-2px);
-    }
-
-    .card h3 {
-      font-size: 1.05rem;
-      margin-bottom: 8px;
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .card p {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #c9d1d9;
-    }
-
-    .formula-banner {
-      background: rgba(88, 166, 255, 0.08);
-      border: 1px solid var(--card-border);
-      padding: 16px 24px;
-      border-radius: 12px;
-      font-family: monospace;
-      font-size: 1.05rem;
-      color: #79c0ff;
-      margin-bottom: 24px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(88, 166, 255, 0.08);
-    }
-
-    /* Comparison Table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--card-bg);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(12px);
-    }
-    th, td {
-      padding: 16px 22px;
-      text-align: left;
-    }
-    th {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--accent);
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    td {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0.95rem;
-    }
-
-    /* Controls Bar */
-    .controls {
-      position: fixed;
-      bottom: 26px;
-      left: 50%;
-      transform: translateX(-50%);
+    .container {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 16px;
-      background: rgba(13, 17, 23, 0.88);
-      padding: 10px 24px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      max-width: 960px;
+      width: 100%;
+    }
+
+    /* Video Canvas Player */
+    canvas {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 16 / 9;
+      background: #090d16;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+    }
+
+    .controls-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: rgba(18, 24, 38, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px 24px;
       backdrop-filter: blur(10px);
-      z-index: 100;
+    }
+
+    .status-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .status-text span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
     }
 
     .btn {
-      background: none;
-      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: var(--text-main);
       cursor: pointer;
-      font-size: 0.92rem;
-      padding: 6px 14px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    .btn:hover { background: rgba(255, 255, 255, 0.12); }
-    .btn.active { color: var(--accent); font-weight: bold; }
-
-    .btn-download {
-      background: rgba(88, 166, 255, 0.15);
-      border: 1px solid var(--accent);
-      color: #79c0ff;
+      font-size: 0.95rem;
       font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
     }
-    .btn-download:hover {
+
+    .btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .btn-primary {
       background: var(--accent);
       color: #090d16;
+      border-color: var(--accent);
     }
 
-    .dots {
-      display: flex;
-      gap: 7px;
-    }
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      transition: 0.3s;
-    }
-    .dot.active {
-      background: var(--accent);
-      width: 18px;
-      border-radius: 5px;
+    .btn-primary:hover:not(:disabled) {
+      background: #79c0ff;
     }
 
-    .progress-bar-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.05);
-      z-index: 200;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: var(--accent);
-      transition: width 0.4s ease;
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
 
-  <div class="ambient-glow"></div>
+  <div class="container">
+    <canvas id="stage" width="1920" height="1080"></canvas>
 
-  <!-- Persistent Header with Animated Logos -->
-  <header>
-    <div class="brand-group">
-      <img src="logo-baranos.jpg" alt="Baranos AI" class="logo-img logo-baranos" id="logoBaranos" onerror="this.style.display='none'">
-      <span class="brand-title">Baranos AI</span>
+    <div class="controls-panel">
+      <div class="status-text" id="statusLabel">Status: <span>Ready</span></div>
+      <div class="btn-group">
+        <button class="btn" id="previewBtn">Preview Animation</button>
+        <button class="btn btn-primary" id="downloadBtn">Render & Download Video</button>
+      </div>
     </div>
-    <div class="brand-group">
-      <span class="brand-title">Fogo L1</span>
-      <img src="logo-fogo.jpg" alt="Fogo L1" class="logo-img logo-fogo" id="logoFogo" onerror="this.style.display='none'">
-    </div>
-  </header>
-
-  <!-- Slide Viewport -->
-  <main id="viewport">
-    
-    <!-- Slide 1 -->
-    <section class="slide active">
-      <div class="slide-tag">Whitepaper v2.0</div>
-      <h1 class="slide-title">BARANOS AI × FOGO L1</h1>
-      <p class="slide-subtitle">Neutral Intelligence as Blockchain Infrastructure. Deterministic, challengeable LLM inference settled natively on SVM.</p>
-      <div class="grid grid-3">
-        <div class="card">
-          <h3>DETERMINISTIC</h3>
-          <p>Identical committed run yields identical output.</p>
-        </div>
-        <div class="card">
-          <h3>CHALLENGEABLE</h3>
-          <p>Optimistic settlement with onchain replay.</p>
-        </div>
-        <div class="card">
-          <h3>COMPOSABLE</h3>
-          <p>Outputs consumed as native smart contract state.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 2 -->
-    <section class="slide">
-      <div class="slide-tag">The AI Trust Dilemma</div>
-      <h1 class="slide-title">Why Web3 Cannot Trust Private AI APIs</h1>
-      <p class="slide-subtitle">Offchain opaque models introduce centralization vectors into decentralized protocols.</p>
-      <div class="grid grid-2">
-        <div class="card">
-          <h3>Ordinary Web2 Inference</h3>
-          <p>• Silent weight updates<br>• Unchecked floating-point drift<br>• Opacity behind proprietary black-box APIs</p>
-        </div>
-        <div class="card" style="border-color: var(--accent);">
-          <h3>Baranos Verifiable Primitive</h3>
-          <p>• Frozen runtime hashes<br>• Committed prompt templates<br>• Fully reproducible onchain computation</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 3 -->
-    <section class="slide">
-      <div class="slide-tag">Mathematical Reproducibility</div>
-      <h1 class="slide-title">The Anatomy of a Canonical Job</h1>
-      <div class="formula-banner">
-        Model Commitment + Pinned Weights + Input Hash + Strict Policy = One Canonical Output
-      </div>
-      <div class="grid grid-4">
-        <div class="card">
-          <h3>Model & Weights</h3>
-          <p>Immutable hash commitment.</p>
-        </div>
-        <div class="card">
-          <h3>Runtime Profile</h3>
-          <p>Strict quantization semantics.</p>
-        </div>
-        <div class="card">
-          <h3>Greedy Decoding</h3>
-          <p>Zero sampling variance.</p>
-        </div>
-        <div class="card">
-          <h3>Output Bounds</h3>
-          <p>Strict schema constraints.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 4 -->
-    <section class="slide">
-      <div class="slide-tag">Optimistic vs Onchain</div>
-      <h1 class="slide-title">Confirmation Mode vs Replay Mode</h1>
-      <p class="slide-subtitle">Balancing execution speed with cryptographically enforced fallback adjudication.</p>
-      <div class="grid grid-2">
-        <div class="card">
-          <h3>MODE 01 Confirmation Mode</h3>
-          <p>• The standard optimistic execution pipeline<br>• Offchain execution: Fast and cost-efficient<br>• Onchain receipts: Cryptographic commitments posted<br>• Dispute fallback: Disputed steps replayed</p>
-        </div>
-        <div class="card">
-          <h3>MODE 02 Replay Mode</h3>
-          <p>• Heavyweight deterministic onchain execution<br>• Full onchain runtime: Executes directly on Fogo<br>• Adjudication engine: Resolves disputed claims<br>• Credible enforcement: Keeps executors honest</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 5 -->
-    <section class="slide">
-      <div class="slide-tag">Consensus & Settlement Layer</div>
-      <h1 class="slide-title">Why Baranos Deployed on Fogo</h1>
-      <p class="slide-subtitle">Fogo delivers the throughput headroom and low latency required for interactive market settlements.</p>
-      <div class="grid grid-3">
-        <div class="card">
-          <h3>~60s</h3>
-          <p>Target result and challenge resolution window.</p>
-        </div>
-        <div class="card">
-          <h3>SVM L1</h3>
-          <p>Firedancer-based high-throughput architecture.</p>
-        </div>
-        <div class="card">
-          <h3>Sub-Cent</h3>
-          <p>Predictable execution and verification fees.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 6 -->
-    <section class="slide">
-      <div class="slide-tag">Workflow Engine</div>
-      <h1 class="slide-title">The Verifiable Inference Lifecycle</h1>
-      <p class="slide-subtitle">The end-to-end trace from job dispatch to verified consumption.</p>
-      <div class="grid grid-3" style="gap: 14px;">
-        <div class="card"><h3>01 Job Creation</h3><p>Commit model and inputs.</p></div>
-        <div class="card"><h3>02 Offchain Run</h3><p>Execute inference efficiently.</p></div>
-        <div class="card"><h3>03 Post Receipt</h3><p>Publish result onchain.</p></div>
-        <div class="card"><h3>04 Challenge Path</h3><p>Replay dispute if raised.</p></div>
-        <div class="card" style="grid-column: span 2;"><h3>05 Settlement</h3><p>Consume canonical state directly in contracts.</p></div>
-      </div>
-    </section>
-
-    <!-- Slide 7 -->
-    <section class="slide">
-      <div class="slide-tag">System Design</div>
-      <h1 class="slide-title">Core Architecture Objects</h1>
-      <p class="slide-subtitle">Four composable primitive registries deployed to Fogo.</p>
-      <div class="grid grid-2">
-        <div class="card">
-          <h3>Model Registry</h3>
-          <p>Weight hashes and runtime profiles.</p>
-        </div>
-        <div class="card">
-          <h3>Input Registry</h3>
-          <p>Merkleized evidence sets.</p>
-        </div>
-        <div class="card">
-          <h3>Inference Policy</h3>
-          <p>Decoding and prompt rules.</p>
-        </div>
-        <div class="card">
-          <h3>Result Account</h3>
-          <p>Confirmed onchain records.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 8 -->
-    <section class="slide">
-      <div class="slide-tag">Trust Minimization</div>
-      <h1 class="slide-title">Comparing Inference Paradigms</h1>
-      <p class="slide-subtitle">Benchmarking auditability across Web2 APIs, human oracles, and Baranos.</p>
-      <table>
-        <thead>
-          <tr>
-            <th>SYSTEM</th>
-            <th>WHAT APPS MUST TRUST</th>
-            <th>WHAT CAN BE AUDITED</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Private AI API</strong></td>
-            <td>Single corporate provider</td>
-            <td style="color: var(--text-muted);">Usually nothing</td>
-          </tr>
-          <tr>
-            <td><strong>Human Oracle</strong></td>
-            <td>Voter collusion cartels</td>
-            <td style="color: var(--text-muted);">Votes cast post-facto</td>
-          </tr>
-          <tr style="background: rgba(88, 166, 255, 0.08);">
-            <td><strong style="color: var(--accent);">Baranos on Fogo</strong></td>
-            <td>Committed code and policy</td>
-            <td style="color: #7ee787;">Full execution trace</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Slide 9 -->
-    <section class="slide">
-      <div class="slide-tag">Governance Distinction</div>
-      <h1 class="slide-title">Execution vs Social Consensus</h1>
-      <p class="slide-subtitle">Validators do not vote on model opinions; they enforce deterministic policy execution.</p>
-      <div class="formula-banner">
-        "Fogo supplies consensus over what was computed, not editorial control."
-      </div>
-      <div class="grid grid-2">
-        <div class="card">
-          <h3>Consensus Role</h3>
-          <p>Finalizes state dispute resolution without subjective review.</p>
-        </div>
-        <div class="card">
-          <h3>Economic Shield</h3>
-          <p>Staked FOGO secures execution history.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 10 -->
-    <section class="slide">
-      <div class="slide-tag">Incentive Design</div>
-      <h1 class="slide-title">Two Decoupled Economic Layers</h1>
-      <p class="slide-subtitle">Aligning incentives between compute executors, challengers, and validators.</p>
-      <div class="grid grid-2">
-        <div class="card">
-          <h3>Inference Market</h3>
-          <p>• Compensates compute executors and dispute challengers<br>• Priced in job bounties or stablecoins</p>
-        </div>
-        <div class="card">
-          <h3>Blockspace Market</h3>
-          <p>• Secures transaction inclusion, state settlement, and replay<br>• Powered directly by native FOGO gas</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 11 -->
-    <section class="slide">
-      <div class="slide-tag">Ecosystem Deployment</div>
-      <h1 class="slide-title">Initial Scope: Prediction Markets</h1>
-      <p class="slide-subtitle">Scalable onchain applications leveraging verifiable neutral inference.</p>
-      <div class="grid grid-3">
-        <div class="card">
-          <h3>Prediction Markets</h3>
-          <p>Frozen natural-language resolution.</p>
-        </div>
-        <div class="card">
-          <h3>Parametric Insurance</h3>
-          <p>Evaluates committed evidence text.</p>
-        </div>
-        <div class="card">
-          <h3>DAO Governance</h3>
-          <p>Verifies proposal compliance.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 12 -->
-    <section class="slide">
-      <div class="slide-tag">The End State</div>
-      <h1 class="slide-title">Neutral Intelligence on SVM</h1>
-      <div class="formula-banner" style="font-size: 1.25rem;">
-        “A smart contract should call intelligence with the same confidence it calls code.”
-      </div>
-      <p class="slide-subtitle" style="text-align: center; margin: 0 auto 30px;">
-        Baranos AI and Fogo transform LLM execution from opaque API outputs into public, neutral state.
-      </p>
-      <div class="footer-hash" style="text-align: center; color: var(--accent); font-weight: 600; letter-spacing: 1px;">
-        #BaranosAI &nbsp;•&nbsp; #FogoL1 &nbsp;•&nbsp; #VerifiableAI
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Controls Bar -->
-  <div class="controls">
-    <button class="btn" id="prevBtn">‹</button>
-    <div class="dots" id="dotsContainer"></div>
-    <button class="btn" id="nextBtn">›</button>
-    <button class="btn" id="playBtn">Play Presentation</button>
-    <button class="btn btn-download" id="downloadBtn">● Record & Download Video</button>
-  </div>
-
-  <div class="progress-bar-container">
-    <div class="progress-bar" id="progressBar"></div>
   </div>
 
   <script>
-    const slides = document.querySelectorAll('.slide');
-    const dotsContainer = document.getElementById('dotsContainer');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const playBtn = document.getElementById('playBtn');
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const previewBtn = document.getElementById('previewBtn');
     const downloadBtn = document.getElementById('downloadBtn');
-    const progressBar = document.getElementById('progressBar');
-    const logoBaranos = document.getElementById('logoBaranos');
-    const logoFogo = document.getElementById('logoFogo');
+    const statusLabel = document.getElementById('statusLabel');
 
-    let current = 0;
-    let timer = null;
-    const slideDuration = 3200; // ~38s total for 12 slides
+    // Load Logos
+    const logoBaranos = new Image();
+    logoBaranos.src = 'logo-baranos.jpg';
+    const logoFogo = new Image();
+    logoFogo.src = 'logo-fogo.jpg';
 
-    // Web Audio Synthesizer
-    let audioCtx = null;
-    let audioDest = null;
-
-    function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        audioDest = audioCtx.createMediaStreamDestination();
+    // Slide Deck Content
+    const slides = [
+      {
+        tag: "WHITEPAPER V2.0",
+        title: "BARANOS AI × FOGO L1",
+        subtitle: "Neutral Intelligence as Blockchain Infrastructure. Deterministic, challengeable LLM inference settled natively on SVM.",
+        cards: [
+          { h: "DETERMINISTIC", p: "Identical committed run yields identical output." },
+          { h: "CHALLENGEABLE", p: "Optimistic settlement with onchain replay." },
+          { h: "COMPOSABLE", p: "Outputs consumed as native smart contract state." }
+        ]
+      },
+      {
+        tag: "THE AI TRUST DILEMMA",
+        title: "Why Web3 Cannot Trust Private AI APIs",
+        subtitle: "Offchain opaque models introduce centralization vectors into decentralized protocols.",
+        cards: [
+          { h: "Ordinary Web2 Inference", p: "Silent weight updates. Floating-point drift. Opacity behind proprietary APIs." },
+          { h: "Baranos Verifiable Primitive", p: "Frozen runtime hashes. Committed prompt templates. Fully reproducible onchain." }
+        ]
+      },
+      {
+        tag: "MATHEMATICAL REPRODUCIBILITY",
+        title: "The Anatomy of a Canonical Job",
+        formula: "Model Commitment + Pinned Weights + Input Hash + Strict Policy = One Canonical Output",
+        cards: [
+          { h: "Model & Weights", p: "Immutable hash commitment." },
+          { h: "Runtime Profile", p: "Strict quantization semantics." },
+          { h: "Greedy Decoding", p: "Zero sampling variance." },
+          { h: "Output Bounds", p: "Strict schema constraints." }
+        ]
+      },
+      {
+        tag: "SETTLEMENT PROTOCOL",
+        title: "Confirmation Mode vs Replay Mode",
+        subtitle: "Dual execution balancing performance with guaranteed cryptographic adjudication.",
+        cards: [
+          { h: "MODE 01 Confirmation Mode", p: "Standard optimistic pipeline. Fast offchain compute. Cryptographic receipts posted onchain." },
+          { h: "MODE 02 Replay Mode", p: "Heavyweight deterministic execution. Full onchain SVM runtime. Slashing keeps executors honest." }
+        ]
+      },
+      {
+        tag: "INFRASTRUCTURE",
+        title: "Consensus & Settlement Layer",
+        subtitle: "Why Baranos deployed directly on Fogo L1.",
+        cards: [
+          { h: "~60s", p: "Target result and dispute resolution window." },
+          { h: "SVM L1", p: "Firedancer-grade high-throughput architecture." },
+          { h: "Sub-Cent", p: "Predictable micro-fees for frequent verification." }
+        ]
+      },
+      {
+        tag: "PIPELINE",
+        title: "Workflow Engine",
+        subtitle: "The complete lifecycle of verifiable inference.",
+        cards: [
+          { h: "01 Job Creation", p: "Commit model and inputs." },
+          { h: "02 Offchain Run", p: "Execute inference efficiently." },
+          { h: "03 Post Receipt", p: "Publish result onchain." },
+          { h: "04 Dispute Path", p: "Replay verification on Fogo." }
+        ]
+      },
+      {
+        tag: "SYSTEM DESIGN",
+        title: "Core Architecture Objects",
+        subtitle: "Four composable onchain state registries.",
+        cards: [
+          { h: "Model Registry", p: "Weight hashes and profiles." },
+          { h: "Input Registry", p: "Merkleized evidence sets." },
+          { h: "Inference Policy", p: "Decoding and prompt rules." },
+          { h: "Result Account", p: "Confirmed onchain records." }
+        ]
+      },
+      {
+        tag: "COMPARISON",
+        title: "Trust Minimization",
+        table: [
+          ["SYSTEM", "WHAT APPS MUST TRUST", "WHAT CAN BE AUDITED"],
+          ["Private AI API", "Single corporate provider", "Usually nothing"],
+          ["Human Oracle", "Collusion cartels", "Votes cast post-facto"],
+          ["Baranos on Fogo", "Committed code & policy", "Full execution trace"]
+        ]
+      },
+      {
+        tag: "CONSENUS MODEL",
+        title: "Execution vs Social Consensus",
+        formula: "\"Fogo supplies consensus over what was computed, not editorial control.\"",
+        cards: [
+          { h: "Consensus Role", p: "Finalizes technical state dispute resolution without subjective review." },
+          { h: "Economic Shield", p: "Staked FOGO tokens secure execution history." }
+        ]
+      },
+      {
+        tag: "ECONOMICS",
+        title: "Two Decoupled Economic Layers",
+        subtitle: "Aligning incentives between compute executors and validators.",
+        cards: [
+          { h: "Inference Market", p: "Compensates compute executors and challengers. Denominated in bounties or stablecoins." },
+          { h: "Blockspace Market", p: "Secures transaction inclusion, state settlement, and replay. Fueled by native FOGO gas." }
+        ]
+      },
+      {
+        tag: "USE CASES",
+        title: "Initial Scope: Prediction Markets",
+        subtitle: "Neutral deterministic intelligence powering autonomous onchain contracts.",
+        cards: [
+          { h: "Prediction Markets", p: "Frozen natural-language resolution." },
+          { h: "Parametric Insurance", p: "Evaluates committed real-world evidence." },
+          { h: "DAO Governance", p: "Verifies proposal compliance." }
+        ]
+      },
+      {
+        tag: "THE END STATE",
+        title: "Neutral Intelligence on SVM",
+        formula: "“A smart contract should call intelligence with the same confidence it calls code.”",
+        subtitle: "Baranos AI and Fogo transform opaque LLM inferences into public, verifiable, neutral state.",
+        footer: "#BaranosAI • #FogoL1 • #VerifiableAI"
       }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+    ];
+
+    // Canvas Slide Drawing Engine
+    function drawSlide(slide, opacity = 1, offsetY = 0) {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+
+      // Background
+      ctx.fillStyle = '#090d16';
+      ctx.fillRect(0, 0, 1920, 1080);
+
+      // Radial ambient lighting
+      const glow = ctx.createRadialGradient(960, 540, 50, 960, 540, 800);
+      glow.addColorStop(0, 'rgba(56, 92, 196, 0.22)');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 1920, 1080);
+
+      // Persistent Top Header & Logos
+      ctx.save();
+      // Left: Baranos Logo
+      if (logoBaranos.complete && logoBaranos.naturalWidth !== 0) {
+        ctx.drawImage(logoBaranos, 80, 50, 64, 64);
       }
-    }
+      ctx.font = '700 24px sans-serif';
+      ctx.fillStyle = '#8b949e';
+      ctx.fillText('BARANOS AI', 160, 90);
 
-    function triggerLogoPulse() {
-      if (logoBaranos) {
-        logoBaranos.classList.add('pulse');
-        setTimeout(() => logoBaranos.classList.remove('pulse'), 450);
+      // Right: Fogo Logo
+      ctx.textAlign = 'right';
+      ctx.fillText('FOGO L1', 1760, 90);
+      if (logoFogo.complete && logoFogo.naturalWidth !== 0) {
+        ctx.drawImage(logoFogo, 1776, 50, 64, 64);
       }
-      if (logoFogo) {
-        logoFogo.classList.add('pulse');
-        setTimeout(() => logoFogo.classList.remove('pulse'), 450);
-      }
-    }
+      ctx.restore();
 
-    function playTransitionSound() {
-      if (!audioCtx) initAudio();
-      triggerLogoPulse();
+      // Slide Content Offset
+      ctx.translate(0, offsetY);
 
-      const now = audioCtx.currentTime;
+      // Category Tag
+      ctx.font = '700 22px sans-serif';
+      ctx.fillStyle = '#58a6ff';
+      ctx.fillText(slide.tag, 160, 260);
 
-      // Low whoosh
-      const oscLow = audioCtx.createOscillator();
-      const gainLow = audioCtx.createGain();
-      oscLow.type = 'sine';
-      oscLow.frequency.setValueAtTime(220, now);
-      oscLow.frequency.exponentialRampToValueAtTime(55, now + 0.45);
-      gainLow.gain.setValueAtTime(0.14, now);
-      gainLow.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-      oscLow.connect(gainLow);
-      gainLow.connect(audioCtx.destination);
-      if (audioDest) gainLow.connect(audioDest);
-      oscLow.start(now);
-      oscLow.stop(now + 0.5);
+      // Title
+      ctx.font = '800 58px sans-serif';
+      ctx.fillStyle = '#f0f6fc';
+      ctx.fillText(slide.title, 160, 335);
 
-      // Chime tick
-      const oscHigh = audioCtx.createOscillator();
-      const gainHigh = audioCtx.createGain();
-      oscHigh.type = 'triangle';
-      oscHigh.frequency.setValueAtTime(900, now + 0.06);
-      oscHigh.frequency.exponentialRampToValueAtTime(450, now + 0.22);
-      gainHigh.gain.setValueAtTime(0.05, now + 0.06);
-      gainHigh.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-      oscHigh.connect(gainHigh);
-      gainHigh.connect(audioCtx.destination);
-      if (audioDest) gainHigh.connect(audioDest);
-      oscHigh.start(now + 0.06);
-      oscHigh.stop(now + 0.24);
-    }
+      let currentY = 385;
 
-    slides.forEach((_, idx) => {
-      const dot = document.createElement('div');
-      dot.className = `dot ${idx === 0 ? 'active' : ''}`;
-      dot.addEventListener('click', () => {
-        initAudio();
-        playTransitionSound();
-        goToSlide(idx);
-      });
-      dotsContainer.appendChild(dot);
-    });
+      // Formula Banner
+      if (slide.formula) {
+        ctx.fillStyle = 'rgba(88, 166, 255, 0.08)';
+        ctx.fillRect(160, currentY, 1600, 70);
+        ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
+        ctx.strokeRect(160, currentY, 1600, 70);
 
-    const dots = document.querySelectorAll('.dot');
-
-    function update() {
-      slides.forEach((s, i) => s.classList.toggle('active', i === current));
-      dots.forEach((d, i) => d.classList.toggle('active', i === current));
-      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
-    }
-
-    function goToSlide(idx) {
-      current = (idx + slides.length) % slides.length;
-      update();
-    }
-
-    prevBtn.addEventListener('click', () => {
-      initAudio();
-      playTransitionSound();
-      goToSlide(current - 1);
-    });
-
-    nextBtn.addEventListener('click', () => {
-      initAudio();
-      playTransitionSound();
-      goToSlide(current + 1);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        initAudio();
-        playTransitionSound();
-        goToSlide(current + 1);
-      }
-      if (e.key === 'ArrowLeft') {
-        initAudio();
-        playTransitionSound();
-        goToSlide(current - 1);
-      }
-    });
-
-    playBtn.addEventListener('click', () => {
-      initAudio();
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-        playBtn.innerText = 'Play Presentation';
-        playBtn.classList.remove('active');
-      } else {
-        goToSlide(0);
-        playTransitionSound();
-        let step = 0;
-        playBtn.innerText = 'Playing...';
-        playBtn.classList.add('active');
-        timer = setInterval(() => {
-          step++;
-          if (step < slides.length) {
-            playTransitionSound();
-            goToSlide(step);
-          } else {
-            clearInterval(timer);
-            timer = null;
-            playBtn.innerText = 'Play Presentation';
-            playBtn.classList.remove('active');
-          }
-        }, slideDuration);
-      }
-    });
-
-    // ROBUST RECORDING ENGINE
-    let recordedBlob = null;
-
-    downloadBtn.addEventListener('click', async () => {
-      // If video is already recorded, immediately download
-      if (recordedBlob) {
-        saveBlob(recordedBlob);
-        return;
+        ctx.font = '500 26px monospace';
+        ctx.fillStyle = '#79c0ff';
+        ctx.textAlign = 'center';
+        ctx.fillText(slide.formula, 960, currentY + 44);
+        ctx.textAlign = 'left';
+        currentY += 105;
       }
 
-      initAudio();
+      // Subtitle
+      if (slide.subtitle) {
+        ctx.font = '400 28px sans-serif';
+        ctx.fillStyle = '#8b949e';
+        ctx.fillText(slide.subtitle, 160, currentY);
+        currentY += 70;
+      }
 
-      try {
-        const videoStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { displaySurface: "browser", frameRate: 60 },
-          audio: false
+      // Cards Grid
+      if (slide.cards) {
+        const count = slide.cards.length;
+        const totalW = 1600;
+        const gap = 24;
+        const cardW = (totalW - gap * (count - 1)) / count;
+        const cardH = 220;
+
+        slide.cards.forEach((c, idx) => {
+          const x = 160 + idx * (cardW + gap);
+          ctx.fillStyle = 'rgba(18, 24, 38, 0.75)';
+          ctx.fillRect(x, currentY, cardW, cardH);
+          ctx.strokeStyle = 'rgba(99, 130, 255, 0.25)';
+          ctx.strokeRect(x, currentY, cardW, cardH);
+
+          // Card Header
+          ctx.font = '700 24px sans-serif';
+          ctx.fillStyle = '#58a6ff';
+          ctx.fillText(c.h, x + 24, currentY + 46);
+
+          // Card Body text wrapped
+          ctx.font = '400 20px sans-serif';
+          ctx.fillStyle = '#c9d1d9';
+          wrapText(ctx, c.p, x + 24, currentY + 90, cardW - 48, 30);
         });
-
-        // Mix video + Web Audio API tracks
-        const tracks = [...videoStream.getVideoTracks()];
-        if (audioDest && audioDest.stream) {
-          tracks.push(...audioDest.stream.getAudioTracks());
-        }
-        const combinedStream = new MediaStream(tracks);
-
-        // Find supported MIME type
-        const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-          ? 'video/webm;codecs=vp9'
-          : 'video/webm';
-
-        const recordedChunks = [];
-        const mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
-
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data && e.data.size > 0) {
-            recordedChunks.push(e.data);
-          }
-        };
-
-        mediaRecorder.onstop = () => {
-          recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
-          
-          // Stop media tracks
-          videoStream.getTracks().forEach(t => t.stop());
-
-          // Update UI: Transform button into a persistent green download button
-          downloadBtn.innerText = '📥 Download Video File Now';
-          downloadBtn.style.background = '#238636';
-          downloadBtn.style.color = '#ffffff';
-          downloadBtn.style.borderColor = '#2ea043';
-          downloadBtn.style.boxShadow = '0 0 15px rgba(46, 160, 67, 0.6)';
-
-          // Attempt auto-download
-          saveBlob(recordedBlob);
-        };
-
-        // Start recording
-        mediaRecorder.start(250); // Slice data every 250ms
-        downloadBtn.innerText = 'Recording... (Watching Slides)';
-        downloadBtn.style.background = 'rgba(255, 60, 60, 0.3)';
-        downloadBtn.style.borderColor = '#ff4d4d';
-        downloadBtn.style.color = '#fff';
-
-        goToSlide(0);
-        playTransitionSound();
-
-        let step = 0;
-        const recordInterval = setInterval(() => {
-          step++;
-          if (step < slides.length) {
-            playTransitionSound();
-            goToSlide(step);
-          } else {
-            clearInterval(recordInterval);
-            setTimeout(() => {
-              mediaRecorder.stop();
-            }, 1200);
-          }
-        }, slideDuration);
-
-      } catch (err) {
-        alert("Permission denied or capture cancelled. Please select 'This Tab' when prompted.");
-        console.error(err);
       }
+
+      // Table (Slide 8)
+      if (slide.table) {
+        const startX = 160;
+        const startY = currentY;
+        const tableW = 1600;
+        const rowH = 65;
+
+        slide.table.forEach((row, rIdx) => {
+          const y = startY + rIdx * rowH;
+          ctx.fillStyle = rIdx === 0 ? 'rgba(255, 255, 255, 0.05)' : (rIdx === 3 ? 'rgba(88, 166, 255, 0.12)' : 'rgba(18, 24, 38, 0.75)');
+          ctx.fillRect(startX, y, tableW, rowH);
+          ctx.strokeStyle = 'rgba(99, 130, 255, 0.2)';
+          ctx.strokeRect(startX, y, tableW, rowH);
+
+          ctx.font = rIdx === 0 ? '700 22px sans-serif' : '500 22px sans-serif';
+          ctx.fillStyle = rIdx === 0 ? '#58a6ff' : (rIdx === 3 ? '#7ee787' : '#f0f6fc');
+          ctx.fillText(row[0], startX + 30, y + 40);
+          ctx.fillText(row[1], startX + 500, y + 40);
+          ctx.fillText(row[2], startX + 1050, y + 40);
+        });
+      }
+
+      // Footer
+      if (slide.footer) {
+        ctx.font = '700 24px sans-serif';
+        ctx.fillStyle = '#58a6ff';
+        ctx.textAlign = 'center';
+        ctx.fillText(slide.footer, 960, 780);
+        ctx.textAlign = 'left';
+      }
+
+      ctx.restore();
+    }
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          context.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillText(line, x, y);
+    }
+
+    // Default static draw
+    drawSlide(slides[0]);
+
+    // Animation & Video Render Runner
+    async function runPresentation(onFrame, onComplete) {
+      const fps = 30;
+      const slideDurationSec = 3.2; // 3.2s per slide (~38s total)
+      const transitionSec = 0.5;    // 0.5s smooth crossfade
+      const framesPerSlide = fps * slideDurationSec;
+      const transitionFrames = fps * transitionSec;
+
+      let currentSlideIdx = 0;
+
+      while (currentSlideIdx < slides.length) {
+        const nextSlideIdx = currentSlideIdx + 1;
+
+        for (let frame = 0; frame < framesPerSlide; frame++) {
+          if (nextSlideIdx < slides.length && frame >= framesPerSlide - transitionFrames) {
+            // Cross-dissolve into next slide
+            const t = (frame - (framesPerSlide - transitionFrames)) / transitionFrames;
+            drawSlide(slides[currentSlideIdx], 1 - t, -t * 15);
+            drawSlide(slides[nextSlideIdx], t, (1 - t) * 15);
+          } else {
+            // Normal slide hold with micro-motion
+            drawSlide(slides[currentSlideIdx], 1, 0);
+          }
+
+          if (onFrame) onFrame(currentSlideIdx, frame);
+          await new Promise(r => setTimeout(r, 1000 / fps));
+        }
+
+        currentSlideIdx++;
+      }
+
+      if (onComplete) onComplete();
+    }
+
+    // 1. Preview
+    previewBtn.addEventListener('click', async () => {
+      previewBtn.disabled = true;
+      downloadBtn.disabled = true;
+      statusLabel.innerHTML = 'Status: <span>Playing preview...</span>';
+
+      await runPresentation(
+        (slideIdx) => {
+          statusLabel.innerHTML = `Status: <span>Slide ${slideIdx + 1} of ${slides.length}</span>`;
+        },
+        () => {
+          previewBtn.disabled = false;
+          downloadBtn.disabled = false;
+          statusLabel.innerHTML = 'Status: <span>Preview finished</span>';
+          drawSlide(slides[0]);
+        }
+      );
     });
 
-    function saveBlob(blob) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'Baranos_AI_Fogo_Video.webm';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 2000);
-    }
+    // 2. Direct Render & Download (NO screen sharing)
+    downloadBtn.addEventListener('click', async () => {
+      previewBtn.disabled = true;
+      downloadBtn.disabled = true;
+
+      // Capture directly from the HTML5 canvas
+      const stream = canvas.captureStream(30);
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : 'video/webm';
+
+      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6000000 });
+      const chunks = [];
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Baranos_AI_Fogo_Video.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 1500);
+
+        previewBtn.disabled = false;
+        downloadBtn.disabled = false;
+        statusLabel.innerHTML = 'Status: <span>Downloaded successfully!</span>';
+      };
+
+      recorder.start();
+      statusLabel.innerHTML = 'Status: <span>Rendering video in background...</span>';
+
+      await runPresentation(
+        (slideIdx) => {
+          statusLabel.innerHTML = `Status: <span>Rendering Slide ${slideIdx + 1} of ${slides.length}...</span>`;
+        },
+        () => {
+          recorder.stop();
+        }
+      );
+    });
   </script>
 </body>
 </html>
